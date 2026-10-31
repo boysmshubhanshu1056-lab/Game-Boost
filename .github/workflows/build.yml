@@ -20,9 +20,6 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Select Xcode
-        run: sudo xcode-select -s /Applications/Xcode.app
-
       - name: Install XcodeGen
         run: brew install xcodegen
 
@@ -40,15 +37,34 @@ jobs:
             CODE_SIGNING_ALLOWED=NO \
             build
 
-      - name: Package IPA correctly
+      - name: Verify app executable
+        run: |
+          APP="build/Build/Products/Release-iphoneos/PRISMATIC.app"
+
+          test -d "$APP"
+          test -f "$APP/Info.plist"
+
+          echo "Checking executable name..."
+          EXECUTABLE=$(/usr/libexec/PlistBuddy -c "Print :CFBundleExecutable" "$APP/Info.plist")
+
+          echo "Executable: $EXECUTABLE"
+
+          test -n "$EXECUTABLE"
+          test -f "$APP/$EXECUTABLE"
+
+          echo "Checking bundle identifier..."
+          /usr/libexec/PlistBuddy -c "Print :CFBundleIdentifier" "$APP/Info.plist"
+
+      - name: Package IPA
         run: |
           mkdir -p Payload artifacts
 
           cp -R build/Build/Products/Release-iphoneos/PRISMATIC.app Payload/
 
-          zip -r artifacts/Prismatic-unsigned.ipa Payload
+          cd Payload
+          zip -r ../artifacts/Prismatic-unsigned.ipa PRISMATIC.app
+          cd ..
 
-          echo "Checking IPA structure..."
           unzip -l artifacts/Prismatic-unsigned.ipa
 
           unzip -l artifacts/Prismatic-unsigned.ipa | grep "Payload/PRISMATIC.app/Info.plist"
