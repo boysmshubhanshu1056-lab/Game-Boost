@@ -3,7 +3,6 @@ name: PRISMATIC iOS Build
 
 on:
   workflow_dispatch:
-
   push:
     branches:
       - main
@@ -14,12 +13,15 @@ permissions:
 
 jobs:
   build:
-    name: Build PRISMATIC
+    name: Build PRISMATIC IPA
     runs-on: macos-15
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+
+      - name: Select Xcode
+        run: sudo xcode-select -s /Applications/Xcode.app
 
       - name: Install XcodeGen
         run: brew install xcodegen
@@ -27,7 +29,7 @@ jobs:
       - name: Generate Xcode project
         run: xcodegen generate
 
-      - name: Build iOS application
+      - name: Build PRISMATIC
         run: |
           xcodebuild \
             -project PRISMATIC.xcodeproj \
@@ -38,22 +40,22 @@ jobs:
             CODE_SIGNING_ALLOWED=NO \
             build
 
-      - name: Package unsigned IPA
+      - name: Package IPA correctly
         run: |
           mkdir -p Payload artifacts
 
-          cp -R \
-            build/Build/Products/Release-iphoneos/PRISMATIC.app \
-            Payload/
+          cp -R build/Build/Products/Release-iphoneos/PRISMATIC.app Payload/
 
-          cd Payload
-          /usr/bin/zip -r ../artifacts/Prismatic-unsigned.ipa PRISMATIC.app
-          cd ..
+          zip -r artifacts/Prismatic-unsigned.ipa Payload
 
-      - name: Upload IPA artifact
+          echo "Checking IPA structure..."
+          unzip -l artifacts/Prismatic-unsigned.ipa
+
+          unzip -l artifacts/Prismatic-unsigned.ipa | grep "Payload/PRISMATIC.app/Info.plist"
+
+      - name: Upload IPA
         uses: actions/upload-artifact@v4
         with:
           name: PRISMATIC-IPA
           path: artifacts/Prismatic-unsigned.ipa
           if-no-files-found: error
-          retention-days: 14
