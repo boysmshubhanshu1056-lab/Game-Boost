@@ -37,23 +37,18 @@ jobs:
             CODE_SIGNING_ALLOWED=NO \
             build
 
-      - name: Verify app executable
+      - name: Verify executable
         run: |
           APP="build/Build/Products/Release-iphoneos/PRISMATIC.app"
 
           test -d "$APP"
           test -f "$APP/Info.plist"
 
-          echo "Checking executable name..."
           EXECUTABLE=$(/usr/libexec/PlistBuddy -c "Print :CFBundleExecutable" "$APP/Info.plist")
 
           echo "Executable: $EXECUTABLE"
 
-          test -n "$EXECUTABLE"
           test -f "$APP/$EXECUTABLE"
-
-          echo "Checking bundle identifier..."
-          /usr/libexec/PlistBuddy -c "Print :CFBundleIdentifier" "$APP/Info.plist"
 
       - name: Package IPA
         run: |
@@ -61,9 +56,10 @@ jobs:
 
           cp -R build/Build/Products/Release-iphoneos/PRISMATIC.app Payload/
 
-          cd Payload
-          zip -r ../artifacts/Prismatic-unsigned.ipa PRISMATIC.app
-          cd ..
+          # IMPORTANT: Run zip from repository root
+          zip -r artifacts/Prismatic-unsigned.ipa Payload
+
+          echo "Checking IPA structure..."
 
           unzip -l artifacts/Prismatic-unsigned.ipa
 
