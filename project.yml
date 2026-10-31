@@ -1,22 +1,24 @@
 
-name: LAKSHYA
+name: PRISMATIC
 
 options:
-  bundleIdPrefix: com.lakshya
+  bundleIdPrefix: com.prismatic
   deploymentTarget:
     iOS: "16.0"
 
 targets:
-  LAKSHYA:
+  PRISMATIC:
     type: application
     platform: iOS
+
     sources:
-      - path: LAKSHYA
+      - path: PRISMATIC
+
     settings:
       base:
-        PRODUCT_BUNDLE_IDENTIFIER: com.lakshya.booster
-        PRODUCT_NAME: LAKSHYA
-        INFOPLIST_FILE: LAKSHYA/Info.plist
+        PRODUCT_BUNDLE_IDENTIFIER: com.prismatic.booster
+        PRODUCT_NAME: PRISMATIC
+        INFOPLIST_FILE: PRISMATIC/Info.plist
         SWIFT_VERSION: "5.9"
         TARGETED_DEVICE_FAMILY: "2"
         IPHONEOS_DEPLOYMENT_TARGET: "16.0"
