@@ -106,17 +106,23 @@ final class DeviceStatsMonitor: ObservableObject {
                 throw StorageError.unavailable
             }
 
-            let availableBytes =
-                values.volumeAvailableCapacityForImportantUsage ??
-                values.volumeAvailableCapacity
+            let availableBytes: Int64
 
-            guard let availableBytes, availableBytes >= 0 else {
+            if let important = values.volumeAvailableCapacityForImportantUsage {
+                availableBytes = important
+            } else if let standard = values.volumeAvailableCapacity {
+                availableBytes = Int64(standard)
+            } else {
+                throw StorageError.unavailable
+            }
+
+            guard availableBytes >= 0 else {
                 throw StorageError.unavailable
             }
 
             let safeAvailable = min(
                 Int64(totalBytes),
-                Int64(availableBytes)
+                availableBytes
             )
 
             let usedBytes = Int64(totalBytes) - safeAvailable
