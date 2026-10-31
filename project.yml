@@ -1,0 +1,24 @@
+
+name: LAKSHYA
+
+options:
+  bundleIdPrefix: com.lakshya
+  deploymentTarget:
+    iOS: "16.0"
+
+targets:
+  LAKSHYA:
+    type: application
+    platform: iOS
+    sources:
+      - path: LAKSHYA
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.lakshya.booster
+        PRODUCT_NAME: LAKSHYA
+        INFOPLIST_FILE: LAKSHYA/Info.plist
+        SWIFT_VERSION: "5.9"
+        TARGETED_DEVICE_FAMILY: "2"
+        IPHONEOS_DEPLOYMENT_TARGET: "16.0"
+        GENERATE_INFOPLIST_FILE: NO
+        CODE_SIGN_STYLE: Manual
